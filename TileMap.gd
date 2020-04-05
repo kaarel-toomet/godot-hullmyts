@@ -16,7 +16,7 @@ var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2, 8:0}
 #7:tree, 8:cactus
 
 func generate(cx,cy):
-	if $generated.ger_cell(cx,cy) != -1:
+	if $generated.get_cell(cx,cy) != -1:
 		return
 	$generated.set_cell(cx,cy,0)
 	for x in range(chunkW*cx,chunkW*(cx+1)):
@@ -53,8 +53,31 @@ func ehita(x,y):
 	set_cell(floor(x),floor(y),3)
 
 
-
-
+func save_world():
+	var save_file := File.new()
+	save_file.open("res://world.dat",File.WRITE)
+	
+	for chunk in $generated.get_used_cells():
+		save_file.store_double(chunk.x)
+		save_file.store_double(chunk.y)
+		for x in range(chunkW):
+			for y in range(chunkH):
+				save_file.store_8(get_cell(x+chunk.x*chunkW, y+chunk.y*chunkH))
+	save_file.close()
+func load_world():
+	var save_file := File.new()
+	if not save_file.file_exists("res://world.dat"):
+		return false
+	save_file.open("res://world.dat",File.READ)
+	
+	while save_file.get_position() != save_file.get_len():
+		var chunk := Vector2()
+		chunk.x = save_file.get_double()
+		chunk.y = save_file.get_double()
+		for x in range(chunkW):
+			for y in range(chunkH):
+				set_cell(x+chunk.x*chunkW,y+chunk.y*chunkH,save_file.get_8())
+	save_file.close()
 
 
 # Called when the node enters the scene tree for the first time.
@@ -72,6 +95,7 @@ func _ready():
 	offsetnoise.lacunarity = 2
 	randomize()
 	scroll(0,0)
+	load_world()
 
 func scroll(sx,sy):
 	for cx in range(3):
@@ -96,6 +120,10 @@ func _process(delta):
 		var parent = get_parent()
 		var xy = parent.get_global_mouse_position()/32
 		ehita(xy[0],xy[1])
+
+func _notification(what):
+	if what == NOTIFICATION_EXIT_TREE:
+		save_world()
 
 
 func _on_hullmyts_changechunk(changex, changey):
