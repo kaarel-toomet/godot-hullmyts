@@ -23,14 +23,3 @@ func _process(delta):
 	move_and_collide(vel)
 
 
-func _on_Area2D_body_entered(body):
-	if body == get_parent().get_node("hullmyts"):
-		connect("hit", get_parent().get_node("main/hullmyts"),"hit")
-		emit_signal("hit")
-
-
-func _on_Area2D_body_exited(body):
-	if body == get_parent().get_node("hullmyts"):
-		emit_signal("unhit")
-
-

@@ -51,6 +51,9 @@ func _process(delta):
 		if velocity.length() > 0:
 			velocity = velocity.normalized() * speed
 			move_and_collide(velocity)
+		if health == 0:
+			position = Vector2(0,0)
+			health = 20
 		var cx = floor((position.x / 32) / chunkW)
 		var cy = floor((position.y / 32) / chunkH)
 		var ocx = floor((oldpos.x / 32) / chunkW)
@@ -68,9 +71,6 @@ func _process(delta):
 				immunity = 0.5
 				health -= 1
 		$CanvasLayer/Label.text = str(health)
-		if health == 0:
-			position = Vector2(0,0)
-			health = 20
 
 
 func _on_main_pause():
@@ -79,8 +79,10 @@ func _on_main_pause():
 	else:
 		pause = true
 
-func _on_koll_hit():
+
+func _on_Area2D_area_entered(area):
 	attacked = true
 
-func _on_koll_unhit():
+
+func _on_Area2D_area_exited(area):
 	attacked = false
