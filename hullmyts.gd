@@ -13,6 +13,8 @@ var chunkH = 10
 var immunity = 0
 var attacked = false
 
+var health = 20
+
 var oldpos = position
 
 
@@ -24,21 +26,21 @@ func _ready():
 	screen_size = get_viewport_rect().size
 	position.x = 0#chunkW*48
 	position.y = 0#chunkH*48
-	print(floor(2.555))
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var oldpos = position
 	if not pause:
+		var velocity = Vector2()  # The player's movement vector.
 		if Input.is_action_pressed("ui_right"):
-			move_and_collide(Vector2(speed,0))
+			velocity.x += 1
 		if Input.is_action_pressed("ui_left"):
-			move_and_collide(Vector2(-speed,0))
+			velocity.x -= 1
 		if Input.is_action_pressed("ui_down"):
-			move_and_collide(Vector2(0,speed))
+			velocity.y += 1
 		if Input.is_action_pressed("ui_up"):
-			move_and_collide(Vector2(0,-speed))
+			velocity.y -= 1
 		if Input.is_action_just_pressed("R"):
 			position.x = 0
 			position.y = 0
@@ -46,6 +48,9 @@ func _process(delta):
 			speed = 32
 		else:
 			speed = 4
+		if velocity.length() > 0:
+			velocity = velocity.normalized() * speed
+			move_and_collide(velocity)
 		var cx = floor((position.x / 32) / chunkW)
 		var cy = floor((position.y / 32) / chunkH)
 		var ocx = floor((oldpos.x / 32) / chunkW)
@@ -61,7 +66,11 @@ func _process(delta):
 			immunity = 0
 			if attacked:
 				immunity = 0.5
-				print("you took damage")
+				health -= 1
+		$CanvasLayer/Label.text = str(health)
+		if health == 0:
+			position = Vector2(0,0)
+			health = 20
 
 
 func _on_main_pause():
@@ -70,11 +79,8 @@ func _on_main_pause():
 	else:
 		pause = true
 
-
 func _on_koll_hit():
 	attacked = true
-
-
 
 func _on_koll_unhit():
 	attacked = false

@@ -7,7 +7,7 @@ extends KinematicBody2D
 signal hit
 signal unhit
 var hxy
-export var speed = 4
+export var speed = 3.5
 
 
 # Called when the node enters the scene tree for the first time.
@@ -25,11 +25,12 @@ func _process(delta):
 
 func _on_Area2D_body_entered(body):
 	if body == get_parent().get_node("hullmyts"):
+		connect("hit", get_parent().get_node("main/hullmyts"),"hit")
 		emit_signal("hit")
-		print("You collided with a monster")
 
 
 func _on_Area2D_body_exited(body):
 	if body == get_parent().get_node("hullmyts"):
 		emit_signal("unhit")
-		print("You are no longer colliding with a monster!")
+
+

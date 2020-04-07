@@ -195,20 +195,29 @@ drag_margin_right = 0.3
 drag_margin_bottom = 0.3
 editor_draw_limits = true
 
-[node name="Label" type="Label" parent="hullmyts/Camera2D"]
-margin_left = -32.0
-margin_top = -56.0
-margin_right = 26.0
-margin_bottom = -42.0
-text = "tryfgfgdfg"
+[node name="CanvasLayer" type="CanvasLayer" parent="hullmyts"]
+
+[node name="ColorRect" type="ColorRect" parent="hullmyts/CanvasLayer"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -64.0
+margin_top = -8.0
+margin_right = 20.0
+margin_bottom = 24.0
+color = Color( 0, 0, 0, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="koll" parent="." instance=ExtResource( 14 )]
-position = Vector2( 160, -32 )
-scale = Vector2( 2, 2 )
+[node name="Label" type="Label" parent="hullmyts/CanvasLayer"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -31.0
+margin_right = 31.0
+margin_bottom = 14.0
+text = "20"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 [connection signal="pause" from="." to="hullmyts" method="_on_main_pause"]
 [connection signal="changechunk" from="hullmyts" to="TileMap" method="_on_hullmyts_changechunk"]
-[connection signal="hit" from="koll" to="hullmyts" method="_on_koll_hit"]
-[connection signal="unhit" from="koll" to="hullmyts" method="_on_koll_unhit"]
