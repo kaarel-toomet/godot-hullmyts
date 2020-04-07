@@ -30,47 +30,48 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if pause:
+		return
 	var oldpos = position
-	if not pause:
-		var velocity = Vector2()  # The player's movement vector.
-		if Input.is_action_pressed("ui_right"):
-			velocity.x += 1
-		if Input.is_action_pressed("ui_left"):
-			velocity.x -= 1
-		if Input.is_action_pressed("ui_down"):
-			velocity.y += 1
-		if Input.is_action_pressed("ui_up"):
-			velocity.y -= 1
-		if Input.is_action_just_pressed("R"):
-			position.x = 0
-			position.y = 0
-		if Input.is_action_pressed("LSHIFT"):
-			speed = 32
-		else:
-			speed = 4
-		if velocity.length() > 0:
-			velocity = velocity.normalized() * speed
-			move_and_collide(velocity)
-		if health == 0:
-			position = Vector2(0,0)
-			health = 20
-		var cx = floor((position.x / 32) / chunkW)
-		var cy = floor((position.y / 32) / chunkH)
-		var ocx = floor((oldpos.x / 32) / chunkW)
-		var ocy = floor((oldpos.y / 32) / chunkH)
-		var changex = cx-ocx
-		var changey = cy-ocy
-		#print(cx, " ", ocx, " ", changex)
-		if changex != 0 or changey != 0:
-			emit_signal("changechunk",changex,changey)
-		if immunity > 0:
-			immunity -= delta
-		else:
-			immunity = 0
-			if attacked:
-				immunity = 0.5
-				health -= 1
-		$CanvasLayer/Label.text = str(health)
+	var velocity = Vector2()  # The player's movement vector.
+	if Input.is_action_pressed("ui_right"):
+		velocity.x += 1
+	if Input.is_action_pressed("ui_left"):
+		velocity.x -= 1
+	if Input.is_action_pressed("ui_down"):
+		velocity.y += 1
+	if Input.is_action_pressed("ui_up"):
+		velocity.y -= 1
+	if Input.is_action_just_pressed("R"):
+		position.x = 0
+		position.y = 0
+	if Input.is_action_pressed("LSHIFT"):
+		speed = 32
+	else:
+		speed = 4
+	if velocity.length() > 0:
+		velocity = velocity.normalized() * speed*64
+		move_and_slide(velocity)
+	if health == 0:
+		position = Vector2(0,0)
+		health = 20
+	var cx = floor((position.x / 32) / chunkW)
+	var cy = floor((position.y / 32) / chunkH)
+	var ocx = floor((oldpos.x / 32) / chunkW)
+	var ocy = floor((oldpos.y / 32) / chunkH)
+	var changex = cx-ocx
+	var changey = cy-ocy
+	#print(cx, " ", ocx, " ", changex)
+	if changex != 0 or changey != 0:
+		emit_signal("changechunk",changex,changey)
+	if immunity > 0:
+		immunity -= delta
+	else:
+		immunity = 0
+		if attacked:
+			immunity = 0.5
+			health -= 1
+	get_parent().get_node("hud/lifetext").text = str(health)
 
 
 func _on_main_pause():

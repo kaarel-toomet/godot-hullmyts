@@ -18,19 +18,18 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	var paused = get_parent().paused
+	if paused:
+		return
 	hxy = get_parent().get_node("hullmyts").position
 	var vel =  hxy-position
 	vel = vel.normalized()*speed
-	move_and_collide(vel)
+	move_and_slide(vel*64)
 	if Input.is_action_just_pressed("LCLICK") and killable:
 		queue_free()
 
-
-
-
 func _on_Area2D_mouse_entered():
 	killable = true
-
 
 func _on_Area2D_mouse_exited():
 	killable = false

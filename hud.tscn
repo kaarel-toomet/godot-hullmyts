@@ -1,0 +1,38 @@
+[gd_scene format=2]
+
+[node name="hud" type="CanvasLayer"]
+
+[node name="Label" type="Label" parent="."]
+margin_left = 432.0
+margin_top = -112.0
+margin_right = 491.0
+margin_bottom = -98.0
+text = "tryfgfgdfh"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -40.0
+margin_right = 48.0
+margin_bottom = 32.0
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lifetext" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -16.0
+margin_top = 8.0
+margin_right = 24.0
+margin_bottom = 22.0
+text = "20"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}

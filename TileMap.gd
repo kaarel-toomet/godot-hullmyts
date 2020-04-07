@@ -25,9 +25,9 @@ func generate(cx,cy):
 			noise.seed = 32
 			mainnoise.octaves = 5
 			mainnoise.period = 40
-			mainnoise.persistence = abs(noise.get_noise_2d(x+1000,y))+0.4
+			mainnoise.persistence = abs(noise.get_noise_2d(x+1000,y)*1.2)+0.4
 			mainnoise.lacunarity = 2
-			var noiseval = mainnoise.get_noise_2d(x+43,y)+offsetnoise.get_noise_2d(x,y)
+			var noiseval = mainnoise.get_noise_2d(x,y)+offsetnoise.get_noise_2d(x,y)*2
 			#print(mainnoise.period, " ",mainnoise.persistence," ",mainnoise.lacunarity, " ", noiseval)
 			if noiseval < -0.3:
 				gencell = 6
@@ -35,9 +35,9 @@ func generate(cx,cy):
 				gencell = 1
 			elif noiseval < 0.1:
 				gencell = 0
-			elif noiseval < 0.3:
+			elif noiseval < 0.55:
 				gencell = 2
-			elif noiseval < 0.45:
+			elif noiseval < 0.75:
 				gencell = 4
 			else:
 				gencell = 5
@@ -90,16 +90,15 @@ func load_world():
 func _ready():
 	randomize()
 	noise.seed = 434
-	noise.octaves = 5
-	noise.period = 100
+	noise.octaves = 4
+	noise.period = 500
 	noise.persistence = 0.5
 	noise.lacunarity = 2
-	offsetnoise.seed = 434
-	offsetnoise.octaves = 5
-	offsetnoise.period = 500
-	offsetnoise.persistence = 0.5
-	offsetnoise.lacunarity = 2
-	randomize()
+	offsetnoise.seed = 222
+	offsetnoise.octaves = 2
+	offsetnoise.period = 5000
+	offsetnoise.persistence = 1
+	offsetnoise.lacunarity = 69
 	scroll(0,0)
 	load_world()
 
