@@ -7,7 +7,7 @@ extends TileMap
 var noise = OpenSimplexNoise.new()
 var mainnoise = OpenSimplexNoise.new()
 var offsetnoise = OpenSimplexNoise.new()
-var chunkW = 15 #then changing these, change the numbers in hullmyts's script, that are used in the changechunk signal
+var chunkW = 15 #when changing these, change the numbers in hullmyts's script, that are used in the changechunk signal
 var chunkH = 10
 var wOffsetx = -1 # activewindow offset, top-left chunk in tiles
 var wOffsety = -1
@@ -26,7 +26,7 @@ func generate(cx,cy):
 			mainnoise.octaves = 5
 			mainnoise.period = 40
 			mainnoise.persistence = abs(noise.get_noise_2d(x+1000,y))+0.4
-			mainnoise.lacunarity = 2#(noise.get_noise_2d(x,y-1000)/2)+2
+			mainnoise.lacunarity = 2
 			var noiseval = mainnoise.get_noise_2d(x+43,y)+offsetnoise.get_noise_2d(x,y)
 			#print(mainnoise.period, " ",mainnoise.persistence," ",mainnoise.lacunarity, " ", noiseval)
 			if noiseval < -0.3:
@@ -55,7 +55,7 @@ func ehita(x,y):
 
 func save_world():
 	var save_file := File.new()
-	save_file.open("res://world.dat",File.WRITE)
+	save_file.open("res://world.gwrld",File.WRITE)
 	
 	for chunk in $generated.get_used_cells():
 		save_file.store_double(chunk.x)
@@ -66,9 +66,11 @@ func save_world():
 	save_file.close()
 func load_world():
 	var save_file := File.new()
-	if not save_file.file_exists("res://world.dat"):
+	if not save_file.file_exists("res://world.gwrld"):
+		print("Save not found, generating new world")
 		return false
-	save_file.open("res://world.dat",File.READ)
+	save_file.open("res://world.gwrld",File.READ)
+	print("Save found")
 	
 	while save_file.get_position() != save_file.get_len():
 		var chunk := Vector2()
