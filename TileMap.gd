@@ -7,8 +7,8 @@ extends TileMap
 var noise = OpenSimplexNoise.new()
 var mainnoise = OpenSimplexNoise.new()
 var offsetnoise = OpenSimplexNoise.new()
-var chunkW = 15 #when changing these, change the numbers in hullmyts's script, that are used in the changechunk signal
-var chunkH = 10
+export var chunkW = 15 #when changing these, change the numbers in hullmyts's script, that are used in the changechunk signal
+export var chunkH = 10
 var wOffsetx = -1 # activewindow offset, top-left chunk in tiles
 var wOffsety = -1
 var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2, 8:0}
