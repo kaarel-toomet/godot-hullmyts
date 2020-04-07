@@ -4,6 +4,7 @@ extends Node2D
 # Declare member variables here. Examples:
 # var a = 2
 signal pause
+var paused = false
 
 export (PackedScene) var koll
 
@@ -16,9 +17,16 @@ func _ready():
 func _process(delta):
 	if Input.is_action_just_pressed("P"):
 		emit_signal("pause")
-	if randi() % 100 == 0:
+		paused = !paused
+	if randi() % 10 == 0:
 		print("koll should spawn")
 		var spawn = koll.instance()
 		add_child(spawn)
-		spawn.position = Vector2(randi() % 1000, randi() % 1000)
+		var sxmax = $hullmyts.position.x+(1.5*$TileMap.chunkW*32)
+		var sxmin = $hullmyts.position.x-(1.5*$TileMap.chunkW*32)
+		var sx = (randi() % int((sxmax-sxmin)) + sxmin)
+		var symax = $hullmyts.position.y+(1.5*$TileMap.chunkH*32)
+		var symin = $hullmyts.position.y-(1.5*$TileMap.chunkH*32)
+		var sy = (randi() % int((symax-symin)) + symin)
+		spawn.position = Vector2(sx,sy)
 		spawn.scale = Vector2(2,2)
