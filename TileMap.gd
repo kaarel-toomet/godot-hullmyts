@@ -54,32 +54,36 @@ func ehita(x,y):
 
 
 func save_world():
-	var save_file := File.new()
-	save_file.open("res://world.gwrld",File.WRITE)
-	
+	var chunks := File.new()
+	chunks.open("res://world/chunks.gwrld",File.WRITE)
 	for chunk in $generated.get_used_cells():
-		save_file.store_double(chunk.x)
-		save_file.store_double(chunk.y)
+		chunks.store_double(chunk.x)
+		chunks.store_double(chunk.y)
 		for x in range(chunkW):
 			for y in range(chunkH):
-				save_file.store_8(get_cell(x+chunk.x*chunkW, y+chunk.y*chunkH))
-	save_file.close()
+				chunks.store_8(get_cell(x+chunk.x*chunkW, y+chunk.y*chunkH))
+	chunks.close()
+	var data := File.new()
+	data.open("res://world/data.gwrld",File.WRITE)
+	data.store_8(get_parent().get_node("hullmyts").health)
+	chunks.close()
 func load_world():
-	var save_file := File.new()
-	if not save_file.file_exists("res://world.gwrld"):
-		print("Save not found, generating new world")
-		return false
-	save_file.open("res://world.gwrld",File.READ)
-	print("Save found")
-	
-	while save_file.get_position() != save_file.get_len():
-		var chunk := Vector2()
-		chunk.x = save_file.get_double()
-		chunk.y = save_file.get_double()
-		for x in range(chunkW):
-			for y in range(chunkH):
-				set_cell(x+chunk.x*chunkW,y+chunk.y*chunkH,save_file.get_8())
-	save_file.close()
+	var chunks := File.new()
+	chunks.open("res://world/chunks.gwrld",File.READ)
+	if chunks.file_exists("res://world/chunks.gwrld"):
+		while chunks.get_position() != chunks.get_len():
+			var chunk := Vector2()
+			chunk.x = chunks.get_double()
+			chunk.y = chunks.get_double()
+			for x in range(chunkW):
+				for y in range(chunkH):
+					set_cell(x+chunk.x*chunkW,y+chunk.y*chunkH,chunks.get_8())
+		chunks.close()
+	var data := File.new()
+	data.open("res://world/data.gwrld",File.READ)
+	if data.file_exists("res://world/data.gwrld"):
+		get_parent().get_node("hullmyts").health = data.get_8()
+		data.close()
 
 
 # Called when the node enters the scene tree for the first time.

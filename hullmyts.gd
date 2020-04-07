@@ -13,7 +13,7 @@ var chunkH = 10
 var immunity = 0
 var attacked = false
 
-var health = 20
+export var health = 20
 
 var oldpos = position
 
