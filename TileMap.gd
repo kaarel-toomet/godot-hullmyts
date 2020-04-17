@@ -32,19 +32,19 @@ func generate(cx,cy):
 			
 			tempnoise.seed = 10
 			tempnoise.octaves = 5
-			tempnoise.period = 40
+			tempnoise.period = 100
 			tempnoise.persistence = 0.5
 			tempnoise.lacunarity = 2
 			
 			wetnoise.seed = 123
 			wetnoise.octaves = 5
-			wetnoise.period = 40
+			wetnoise.period = 100
 			wetnoise.persistence = 0.5
 			wetnoise.lacunarity = 2
 			var noiseval = mainnoise.get_noise_2d(x,y)+offsetnoise.get_noise_2d(x,y)*2
 			var heatval = tempnoise.get_noise_2d(x,y)
 			var moistureval = wetnoise.get_noise_2d(x,y)
-			var heatthresholdlow = rand_range(-0.4,-0.2)
+			var heatthresholdlow = rand_range(-0.35,-0.25)
 			var heatthresholdhigh = rand_range(0.2,0.4)
 			var moisturethresholdlow = rand_range(-0.4,-0.2)
 			var moisturethresholdhigh = rand_range(0.2,0.4)
@@ -52,18 +52,18 @@ func generate(cx,cy):
 			var moisture
 			
 			if heatval < heatthresholdlow:
-				heat = -1
-			elif heatval < heatthresholdhigh:
 				heat = 0
-			else:
+			elif heatval < heatthresholdhigh:
 				heat = 1
+			else:
+				heat = 2
 			
 			if moistureval < moisturethresholdlow:
-				moisture = -1
-			elif moistureval < moisturethresholdhigh:
 				moisture = 0
-			else:
+			elif moistureval < moisturethresholdhigh:
 				moisture = 1
+			else:
+				moisture = 2
 			
 			#print(mainnoise.period, " ",mainnoise.persistence," ",mainnoise.lacunarity, " ", noiseval)
 			if noiseval < -0.3:
@@ -73,12 +73,14 @@ func generate(cx,cy):
 			elif noiseval < 0.1:
 				gencell = 0
 			elif noiseval < 0.55:
-				if heat == 1:
+				if heat == 2:
 					gencell = 0
-					if rand_range(0,100) < 1:
+					if rand_range(-5,moistureval) > 0:
 						gencell = 8
-				elif heat == 0:
+				elif heat == 1:
 					gencell = 2
+					if moisture == 2:
+						gencell = 7
 				else:
 					gencell = 9
 			elif noiseval < 0.75:
