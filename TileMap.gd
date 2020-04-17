@@ -4,16 +4,18 @@ extends TileMap
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-var noise = OpenSimplexNoise.new()
+var persistencenoise = OpenSimplexNoise.new()
 var mainnoise = OpenSimplexNoise.new()
 var offsetnoise = OpenSimplexNoise.new()
+var tempnoise = OpenSimplexNoise.new()
+var wetnoise = OpenSimplexNoise.new()
 export var chunkW = 15 #when changing these, change the numbers in hullmyts's script, that are used in the changechunk signal
 export var chunkH = 10
 var wOffsetx = -1 # activewindow offset, top-left chunk in tiles
 var wOffsety = -1
-var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2, 8:0}
+var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2, 8:0, 9:0}
 #0:sand, 1:sea, 2:grass, 3:box, 4:stone, 5:snow, 6:deep sea
-#7:tree, 8:cactus
+#7:tree, 8:cactus, 9:snowy ground
 
 func generate(cx,cy):
 	if $generated.get_cell(cx,cy) != -1:
@@ -22,12 +24,47 @@ func generate(cx,cy):
 	for x in range(chunkW*cx,chunkW*(cx+1)):
 		for y in range(chunkH*cy,chunkH*(cy+1)):
 			var gencell = -1
-			noise.seed = 32
+			persistencenoise.seed = 32
 			mainnoise.octaves = 5
 			mainnoise.period = 40
-			mainnoise.persistence = abs(noise.get_noise_2d(x+1000,y)*1.2)+0.4
+			mainnoise.persistence = abs(persistencenoise.get_noise_2d(x+1000,y)*1.2)+0.4
 			mainnoise.lacunarity = 2
+			
+			tempnoise.seed = 10
+			tempnoise.octaves = 5
+			tempnoise.period = 40
+			tempnoise.persistence = 0.5
+			tempnoise.lacunarity = 2
+			
+			wetnoise.seed = 123
+			wetnoise.octaves = 5
+			wetnoise.period = 40
+			wetnoise.persistence = 0.5
+			wetnoise.lacunarity = 2
 			var noiseval = mainnoise.get_noise_2d(x,y)+offsetnoise.get_noise_2d(x,y)*2
+			var heatval = tempnoise.get_noise_2d(x,y)
+			var moistureval = wetnoise.get_noise_2d(x,y)
+			var heatthresholdlow = rand_range(-0.4,-0.2)
+			var heatthresholdhigh = rand_range(0.2,0.4)
+			var moisturethresholdlow = rand_range(-0.4,-0.2)
+			var moisturethresholdhigh = rand_range(0.2,0.4)
+			var heat
+			var moisture
+			
+			if heatval < heatthresholdlow:
+				heat = -1
+			elif heatval < heatthresholdhigh:
+				heat = 0
+			else:
+				heat = 1
+			
+			if moistureval < moisturethresholdlow:
+				moisture = -1
+			elif moistureval < moisturethresholdhigh:
+				moisture = 0
+			else:
+				moisture = 1
+			
 			#print(mainnoise.period, " ",mainnoise.persistence," ",mainnoise.lacunarity, " ", noiseval)
 			if noiseval < -0.3:
 				gencell = 6
@@ -36,7 +73,14 @@ func generate(cx,cy):
 			elif noiseval < 0.1:
 				gencell = 0
 			elif noiseval < 0.55:
-				gencell = 2
+				if heat == 1:
+					gencell = 0
+					if rand_range(0,100) < 1:
+						gencell = 8
+				elif heat == 0:
+					gencell = 2
+				else:
+					gencell = 9
 			elif noiseval < 0.75:
 				gencell = 4
 			else:
@@ -79,6 +123,8 @@ func load_world():
 				for y in range(chunkH):
 					set_cell(x+chunk.x*chunkW,y+chunk.y*chunkH,chunks.get_8())
 		chunks.close()
+	else:
+		print("chunks file not found")
 	var data := File.new()
 	data.open("res://world/data.gwrld",File.READ)
 	if data.file_exists("res://world/data.gwrld"):
@@ -89,18 +135,18 @@ func load_world():
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	randomize()
-	noise.seed = 434
-	noise.octaves = 4
-	noise.period = 500
-	noise.persistence = 0.5
-	noise.lacunarity = 2
+	persistencenoise.seed = 434
+	persistencenoise.octaves = 4
+	persistencenoise.period = 500
+	persistencenoise.persistence = 0.5
+	persistencenoise.lacunarity = 2
 	offsetnoise.seed = 222
 	offsetnoise.octaves = 2
 	offsetnoise.period = 5000
 	offsetnoise.persistence = 1
 	offsetnoise.lacunarity = 69
 	scroll(0,0)
-	load_world()
+	#load_world()##################################################Rtrrrrre
 
 func scroll(sx,sy):
 	for cx in range(3):
