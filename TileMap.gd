@@ -13,9 +13,9 @@ export var chunkW = 15 #when changing these, change the numbers in hullmyts's sc
 export var chunkH = 10
 var wOffsetx = -1 # activewindow offset, top-left chunk in tiles
 var wOffsety = -1
-var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2, 8:0, 9:0}
+var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2, 8:0, 9:0, 10:9}
 #0:sand, 1:sea, 2:grass, 3:box, 4:stone, 5:snow, 6:deep sea
-#7:tree, 8:cactus, 9:snowy ground
+#7:tree, 8:cactus, 9:snowy ground, 10:spruce
 
 func generate(cx,cy):
 	if $generated.get_cell(cx,cy) != -1:
@@ -74,15 +74,22 @@ func generate(cx,cy):
 				gencell = 0
 			elif noiseval < 0.55:
 				if heat == 2:
-					gencell = 0
-					if rand_range(-5,moistureval) > 0:
-						gencell = 8
+					if moisture == 0:
+						gencell = 0
+						if rand_range(-50,moistureval) > -0.3:
+							gencell = 8
+					elif moisture == 1:
+						gencell = 2
+					else:
+						gencell = 7
 				elif heat == 1:
 					gencell = 2
-					if moisture == 2:
+					if moisture > 0:
 						gencell = 7
 				else:
 					gencell = 9
+					if moisture == 2:
+						gencell = 10
 			elif noiseval < 0.75:
 				gencell = 4
 			else:
