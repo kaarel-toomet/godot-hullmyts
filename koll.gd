@@ -24,7 +24,7 @@ func _process(delta):
 	hxy = get_parent().get_node("hullmyts").position
 	var vel =  hxy-position
 	vel = vel.normalized()*speed
-	move_and_slide(vel*64)
+	move_and_slide(vel/delta)
 	if Input.is_action_just_pressed("LCLICK") and killable:
 		queue_free()
 

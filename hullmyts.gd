@@ -50,8 +50,8 @@ func _process(delta):
 	else:
 		speed = 4
 	if velocity.length() > 0:
-		velocity = velocity.normalized() * speed*64
-		move_and_slide(velocity)
+		velocity = velocity.normalized() * speed
+		move_and_slide(velocity/delta)
 	if health == 0:
 		position = Vector2(0,0)
 		health = 20

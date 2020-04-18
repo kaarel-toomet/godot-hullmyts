@@ -11,6 +11,7 @@ var tempnoise = OpenSimplexNoise.new()
 var wetnoise = OpenSimplexNoise.new()
 var largetempnoise = OpenSimplexNoise.new()
 var largewetnoise = OpenSimplexNoise.new()
+var rivetrnoise = OpenSimplexNoise.new()
 export var chunkW = 15 #when changing these, change the numbers in hullmyts's script, that are used in the changechunk signal
 export var chunkH = 10
 var wOffsetx = -1 # activewindow offset, top-left chunk in tiles
@@ -36,13 +37,13 @@ func generate(cx,cy):
 			
 			tempnoise.seed = 10
 			tempnoise.octaves = 5
-			tempnoise.period = 100
+			tempnoise.period = 150
 			tempnoise.persistence = 0.5
 			tempnoise.lacunarity = 2
 			
 			wetnoise.seed = 123
 			wetnoise.octaves = 5
-			wetnoise.period = 100
+			wetnoise.period = 150
 			wetnoise.persistence = 0.5
 			wetnoise.lacunarity = 2
 			
@@ -58,16 +59,25 @@ func generate(cx,cy):
 			largewetnoise.persistence = 0.5
 			largewetnoise.lacunarity = 2
 			
+			rivetrnoise.seed = 7
+			rivetrnoise.octaves = 9
+			rivetrnoise.period = 500
+			rivetrnoise.persistence = 0.5
+			rivetrnoise.lacunarity = 2
+			
 			var offsetval = pow(abs(continentnoise.get_noise_2d(x,y)),0.3) * sign(continentnoise.get_noise_2d(x,y))
 			var noiseval = mainnoise.get_noise_2d(x,y)+offsetval*0.6
 			var heatval = tempnoise.get_noise_2d(x,y) + largetempnoise.get_noise_2d(x,y)
 			var moistureval = wetnoise.get_noise_2d(x,y) + largewetnoise.get_noise_2d(x,y)
+			
 			var heatthresholdlow = rand_range(-0.35,-0.15)
 			var heatthresholdhigh = rand_range(0.15,0.35)
 			var moisturethresholdlow = rand_range(-0.35,-0.15)
 			var moisturethresholdhigh = rand_range(0.15,0.35)
 			var heat
 			var moisture
+			
+			var rivetrval = abs(rivetrnoise.get_noise_2d(x,y))
 			
 			if heatval < heatthresholdlow:
 				heat = 0
@@ -86,6 +96,8 @@ func generate(cx,cy):
 			#print(mainnoise.period, " ",mainnoise.persistence," ",mainnoise.lacunarity, " ", noiseval)
 			if noiseval < -0.3:
 				gencell = 6
+				if heatval < heatthresholdlow-0.1:
+					gencell = 14
 			elif noiseval < 0:
 				gencell = 1
 				if heat == 0:
@@ -100,7 +112,7 @@ func generate(cx,cy):
 							gencell = 8
 					elif moisture == 1:
 						gencell = 2
-						if rand_range(-1,moistureval) > -0.5:
+						if rand_range(0,1) < (moistureval+0.2)/0.4*0.5:
 							gencell = 15
 					else:
 						gencell = 12
@@ -110,7 +122,7 @@ func generate(cx,cy):
 						gencell = 7
 					elif moisture == 2:
 						gencell = 11
-						if rand_range(0,5) < 1:
+						if rand_range(0,1) < moistureval:
 							gencell = 1
 				else:
 					gencell = 9
@@ -122,6 +134,8 @@ func generate(cx,cy):
 				gencell = 4
 			else:
 				gencell = 5
+			if gencell != 14 and gencell != 6 and rivetrval < 0.01:
+				gencell = 1
 			if get_cell(x,y) == -1:
 				set_cell(x,y,gencell)
 func lammuta(x,y):
@@ -211,7 +225,7 @@ func _process(delta):
 
 func _notification(what):
 	if what == NOTIFICATION_EXIT_TREE:
-		save_world()
+		pass#save_world()
 
 
 func _on_hullmyts_changechunk(changex, changey):
