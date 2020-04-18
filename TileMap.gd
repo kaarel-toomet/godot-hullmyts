@@ -6,16 +6,20 @@ extends TileMap
 # var b = "text"
 var persistencenoise = OpenSimplexNoise.new()
 var mainnoise = OpenSimplexNoise.new()
-var offsetnoise = OpenSimplexNoise.new()
+var continentnoise = OpenSimplexNoise.new()
 var tempnoise = OpenSimplexNoise.new()
 var wetnoise = OpenSimplexNoise.new()
+var largetempnoise = OpenSimplexNoise.new()
+var largewetnoise = OpenSimplexNoise.new()
 export var chunkW = 15 #when changing these, change the numbers in hullmyts's script, that are used in the changechunk signal
 export var chunkH = 10
 var wOffsetx = -1 # activewindow offset, top-left chunk in tiles
 var wOffsety = -1
-var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2, 8:0, 9:0, 10:9}
+var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2,
+				8:0, 9:0, 10:9, 11:1, 12:2, 13:9, 14:1, 15:2}
 #0:sand, 1:sea, 2:grass, 3:box, 4:stone, 5:snow, 6:deep sea
-#7:tree, 8:cactus, 9:snowy ground, 10:spruce
+#7:tree, 8:cactus, 9:snowy ground, 10:spruce, 11:peat moss, 12:jungle
+#13:tundra, 14:sea ice, 15:acacia
 
 func generate(cx,cy):
 	if $generated.get_cell(cx,cy) != -1:
@@ -41,13 +45,27 @@ func generate(cx,cy):
 			wetnoise.period = 100
 			wetnoise.persistence = 0.5
 			wetnoise.lacunarity = 2
-			var noiseval = mainnoise.get_noise_2d(x,y)+offsetnoise.get_noise_2d(x,y)*2
-			var heatval = tempnoise.get_noise_2d(x,y)
-			var moistureval = wetnoise.get_noise_2d(x,y)
-			var heatthresholdlow = rand_range(-0.35,-0.25)
-			var heatthresholdhigh = rand_range(0.2,0.4)
-			var moisturethresholdlow = rand_range(-0.4,-0.2)
-			var moisturethresholdhigh = rand_range(0.2,0.4)
+			
+			largetempnoise.seed = 100
+			largetempnoise.octaves = 5
+			largetempnoise.period = 2500
+			largetempnoise.persistence = 0.5
+			largetempnoise.lacunarity = 2
+			
+			largewetnoise.seed = 1234
+			largewetnoise.octaves = 5
+			largewetnoise.period = 2500
+			largewetnoise.persistence = 0.5
+			largewetnoise.lacunarity = 2
+			
+			var offsetval = pow(abs(continentnoise.get_noise_2d(x,y)),0.3) * sign(continentnoise.get_noise_2d(x,y))
+			var noiseval = mainnoise.get_noise_2d(x,y)+offsetval*0.6
+			var heatval = tempnoise.get_noise_2d(x,y) + largetempnoise.get_noise_2d(x,y)
+			var moistureval = wetnoise.get_noise_2d(x,y) + largewetnoise.get_noise_2d(x,y)
+			var heatthresholdlow = rand_range(-0.35,-0.15)
+			var heatthresholdhigh = rand_range(0.15,0.35)
+			var moisturethresholdlow = rand_range(-0.35,-0.15)
+			var moisturethresholdhigh = rand_range(0.15,0.35)
 			var heat
 			var moisture
 			
@@ -70,26 +88,36 @@ func generate(cx,cy):
 				gencell = 6
 			elif noiseval < 0:
 				gencell = 1
+				if heat == 0:
+					gencell = 14
 			elif noiseval < 0.1:
 				gencell = 0
 			elif noiseval < 0.55:
 				if heat == 2:
 					if moisture == 0:
 						gencell = 0
-						if rand_range(-50,moistureval) > -0.3:
+						if rand_range(-1.5,moistureval) > -0.5:
 							gencell = 8
 					elif moisture == 1:
 						gencell = 2
+						if rand_range(0,10) < 1:
+							gencell = 15
 					else:
-						gencell = 7
+						gencell = 12
 				elif heat == 1:
 					gencell = 2
-					if moisture > 0:
+					if moisture == 1:
 						gencell = 7
+					elif moisture == 2:
+						gencell = 11
+						if rand_range(0,5) < 1:
+							gencell = 1
 				else:
 					gencell = 9
 					if moisture == 2:
 						gencell = 10
+					if moisture == 1:
+						gencell = 13
 			elif noiseval < 0.75:
 				gencell = 4
 			else:
@@ -149,13 +177,13 @@ func _ready():
 	persistencenoise.period = 500
 	persistencenoise.persistence = 0.5
 	persistencenoise.lacunarity = 2
-	offsetnoise.seed = 222
-	offsetnoise.octaves = 2
-	offsetnoise.period = 5000
-	offsetnoise.persistence = 1
-	offsetnoise.lacunarity = 69
+	continentnoise.seed = 222
+	continentnoise.octaves = 5
+	continentnoise.period = 1000
+	continentnoise.persistence = 0.5
+	continentnoise.lacunarity = 2
 	scroll(0,0)
-	#load_world()##################################################Rtrrrrre
+	load_world()##################################################Rtrrrrre
 
 func scroll(sx,sy):
 	for cx in range(3):
