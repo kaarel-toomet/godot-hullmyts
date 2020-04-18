@@ -100,7 +100,7 @@ func generate(cx,cy):
 							gencell = 8
 					elif moisture == 1:
 						gencell = 2
-						if rand_range(0,10) < 1:
+						if rand_range(-1,moistureval) > -0.5:
 							gencell = 15
 					else:
 						gencell = 12
