@@ -95,7 +95,10 @@ func _process(delta):
 	if select < 0:
 		select = 19
 	var hotbarnew = hotbar
+	#print(inventory)
 	for s in range(20):
+		if inventory[s] == 255:
+			inventory[s] = -1
 		hotbarnew.blit_rect(blocks[inventory[s]], Rect2(0,0,32,32),Vector2(1+s*18,1))
 		var texture = ImageTexture.new()
 		texture.create_from_image(hotbarnew)

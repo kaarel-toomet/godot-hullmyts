@@ -1,5 +1,7 @@
 extends TileMap
 
+export (PackedScene) var kuld
+
 var persistencenoise = OpenSimplexNoise.new()#noises used by worldgen
 var mainnoise = OpenSimplexNoise.new()
 var continentnoise = OpenSimplexNoise.new()
@@ -110,6 +112,10 @@ func generate(cx,cy):
 				gencell = 1
 			if get_cell(x,y) == -1:
 				set_cell(x,y,gencell)
+			if randi() % 10 == 0:
+				var spawn = kuld.instance()
+				add_child(spawn)
+				spawn.position = Vector2(x*32,y*32)
 				
 func lammuta(x,y):
 	x = floor(x)
@@ -132,7 +138,10 @@ func save_world():
 	var data := File.new()
 	data.open("res://world/data.gwrld",File.WRITE)
 	data.store_8(get_parent().get_node("hullmyts").health)
-	chunks.close()
+	for s in range(20):
+		data.store_8(get_parent().get_node("hud").inventory[s])
+		data.store_16(get_parent().get_node("hud").amounts[s])
+	data.close()
 func load_world():
 	var chunks := File.new()
 	chunks.open("res://world/chunks.gwrld",File.READ)
@@ -151,7 +160,12 @@ func load_world():
 	data.open("res://world/data.gwrld",File.READ)
 	if data.file_exists("res://world/data.gwrld"):
 		get_parent().get_node("hullmyts").health = data.get_8()
-		data.close()
+		for s in range(20):
+			get_parent().get_node("hud").inventory[s] = data.get_8()
+			get_parent().get_node("hud").amounts[s] = data.get_16()
+	else:
+		print("data file not found")
+	data.close()
 
 
 # Called when the node enters the scene tree for the first time.
