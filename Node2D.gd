@@ -3,7 +3,7 @@ extends Node2D
 
 # Declare member variables here. Examples:
 # var a = 2
-# var b = "text"
+var amounts
 
 
 # Called when the node enters the scene tree for the first time.
@@ -13,15 +13,32 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
-#	pass
+	#pass
+	#var amounts = get_parent().amounts
+	#var label = Label.new()
+	#var font = label.get_font("")
+	#for s in range(20):
+	#draw_string(font, Vector2(20+s*36,50), str(amounts[s]))
+	#label.free()
 
 
 
 
-func _on_Node2D_draw():
-	var amounts = get_parent().amounts
+func _draw():
+	amounts = get_parent().amounts
 	var label = Label.new()
 	var font = label.get_font("")
 	for s in range(20):
 		draw_string(font, Vector2(20+s*36,50), str(amounts[s]))
 	label.free()
+	#print(amounts)
+
+#func _notification(what):
+	#if what == NOTIFICATION_DRAW:
+	#	var amounts = get_parent().amounts
+	#	var label = Label.new()
+	#	var font = label.get_font("")
+	#	for s in range(20):
+	#		draw_string(font, Vector2(20+s*36,50), str(amounts[s]))
+	#	label.free()
+	#	print("drdrfre")

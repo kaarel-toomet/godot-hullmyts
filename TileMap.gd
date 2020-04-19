@@ -17,7 +17,9 @@ var wOffsety = -1
 
 
 signal lammutus(blockbroken)
-signal ehitus()
+signal ehitus
+signal jahsaabehitada
+var mxy
 
 var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2,
 				8:0, 9:0, 10:9, 11:1, 12:2, 13:9, 14:1, 15:2}
@@ -32,41 +34,6 @@ func generate(cx,cy):
 	for x in range(chunkW*cx,chunkW*(cx+1)):
 		for y in range(chunkH*cy,chunkH*(cy+1)):
 			var gencell = -1
-			persistencenoise.seed = 32
-			mainnoise.octaves = 5
-			mainnoise.period = 40
-			mainnoise.persistence = abs(persistencenoise.get_noise_2d(x+1000,y)*1.2)+0.4
-			mainnoise.lacunarity = 2
-			
-			tempnoise.seed = 10
-			tempnoise.octaves = 5
-			tempnoise.period = 150
-			tempnoise.persistence = 0.5
-			tempnoise.lacunarity = 2
-			
-			wetnoise.seed = 123
-			wetnoise.octaves = 5
-			wetnoise.period = 150
-			wetnoise.persistence = 0.5
-			wetnoise.lacunarity = 2
-			
-			largetempnoise.seed = 100
-			largetempnoise.octaves = 5
-			largetempnoise.period = 2500
-			largetempnoise.persistence = 0.5
-			largetempnoise.lacunarity = 2
-			
-			largewetnoise.seed = 1234
-			largewetnoise.octaves = 5
-			largewetnoise.period = 2500
-			largewetnoise.persistence = 0.5
-			largewetnoise.lacunarity = 2
-			
-			rivetrnoise.seed = 7
-			rivetrnoise.octaves = 9
-			rivetrnoise.period = 500
-			rivetrnoise.persistence = 0.5
-			rivetrnoise.lacunarity = 2
 			
 			var offsetval = pow(abs(continentnoise.get_noise_2d(x,y)),0.3) * sign(continentnoise.get_noise_2d(x,y))
 			var noiseval = mainnoise.get_noise_2d(x,y)+offsetval*0.6
@@ -80,16 +47,18 @@ func generate(cx,cy):
 			var heat
 			var moisture
 			
+			mainnoise.persistence = abs(persistencenoise.get_noise_2d(x+1000,y)*1.2)+0.4
+			
 			var rivetrval = abs(rivetrnoise.get_noise_2d(x,y))
 			
-			if heatval < heatthresholdlow:
+			if heatval < heatthresholdlow: # make heat simpler
 				heat = 0
 			elif heatval < heatthresholdhigh:
 				heat = 1
 			else:
 				heat = 2
 			
-			if moistureval < moisturethresholdlow:
+			if moistureval < moisturethresholdlow:# make moisture simpler
 				moisture = 0
 			elif moistureval < moisturethresholdhigh:
 				moisture = 1
@@ -97,17 +66,17 @@ func generate(cx,cy):
 				moisture = 2
 			
 			#print(mainnoise.period, " ",mainnoise.persistence," ",mainnoise.lacunarity, " ", noiseval)
-			if noiseval < -0.3:
+			if noiseval < -0.3: # deep sea
 				gencell = 6
-				if heatval < heatthresholdlow-0.1:
+				if heatval < heatthresholdlow-0.1: # deep sea ice
 					gencell = 14
-			elif noiseval < 0:
+			elif noiseval < 0: # sea
 				gencell = 1
-				if heat == 0:
+				if heat == 0: # sea ice
 					gencell = 14
-			elif noiseval < 0.1:
+			elif noiseval < 0.1: # beaches
 				gencell = 0
-			elif noiseval < 0.55:
+			elif noiseval < 0.55: # biome block
 				if heat == 2:
 					if moisture == 0:
 						gencell = 0
@@ -141,14 +110,13 @@ func generate(cx,cy):
 				gencell = 1
 			if get_cell(x,y) == -1:
 				set_cell(x,y,gencell)
+				
 func lammuta(x,y):
 	x = floor(x)
 	y = floor(y)
 	if get_cell(x,y) == -1:
 		return
 	set_cell(x,y,breakto[get_cell(x,y)])
-func ehita(x,y):
-	set_cell(floor(x),floor(y),3)
 
 
 func save_world():
@@ -189,16 +157,55 @@ func load_world():
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	randomize()
+	
 	persistencenoise.seed = 434
 	persistencenoise.octaves = 4
 	persistencenoise.period = 500
 	persistencenoise.persistence = 0.5
 	persistencenoise.lacunarity = 2
+	
 	continentnoise.seed = 222
 	continentnoise.octaves = 5
 	continentnoise.period = 1000
 	continentnoise.persistence = 0.5
 	continentnoise.lacunarity = 2
+	
+	persistencenoise.seed = 32
+	mainnoise.octaves = 5
+	mainnoise.period = 40
+	# left empty because it uses noise
+	mainnoise.lacunarity = 2
+	
+	tempnoise.seed = 10
+	tempnoise.octaves = 5	
+	tempnoise.period = 150
+	tempnoise.persistence = 0.5		
+	tempnoise.lacunarity = 2
+		
+	wetnoise.seed = 123
+	wetnoise.octaves = 5
+	wetnoise.period = 150
+	wetnoise.persistence = 0.5
+	wetnoise.lacunarity = 2
+	
+	largetempnoise.seed = 100
+	largetempnoise.octaves = 5
+	largetempnoise.period = 2500
+	largetempnoise.persistence = 0.5
+	largetempnoise.lacunarity = 2
+	
+	largewetnoise.seed = 1234
+	largewetnoise.octaves = 5
+	largewetnoise.period = 2500
+	largewetnoise.persistence = 0.5
+	largewetnoise.lacunarity = 2
+	
+	rivetrnoise.seed = 7
+	rivetrnoise.octaves = 9
+	rivetrnoise.period = 500
+	rivetrnoise.persistence = 0.5
+	rivetrnoise.lacunarity = 2
+	
 	scroll(0,0)
 	load_world()##################################################Rtrrrrre
 
@@ -217,14 +224,12 @@ func scroll(sx,sy):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	var parent = get_parent()
+	mxy = parent.get_global_mouse_position()/32
 	if Input.is_action_just_pressed("LCLICK"):
-		var parent = get_parent()
-		var xy = parent.get_global_mouse_position()/32
-		lammuta(xy[0],xy[1])
+		emit_signal("lammutus",get_cell(floor(mxy[0]),floor(mxy[1])))
 	if Input.is_action_just_pressed("RCLICK"):
-		var parent = get_parent()
-		var xy = parent.get_global_mouse_position()/32
-		ehita(xy[0],xy[1])
+		emit_signal("ehitus")
 
 func _notification(what):
 	if what == NOTIFICATION_EXIT_TREE:
@@ -233,3 +238,12 @@ func _notification(what):
 
 func _on_hullmyts_changechunk(changex, changey):
 	scroll(changex, changey)
+
+
+func _on_hud_ehitadasaab(block):
+	if get_cell(floor(mxy[0]),floor(mxy[1])) == breakto[block]:
+		set_cell(floor(mxy[0]),floor(mxy[1]),block)
+		emit_signal("jahsaabehitada")
+
+func _on_hud_lammutadasaab():
+	lammuta(mxy[0],mxy[1])

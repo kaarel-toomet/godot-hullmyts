@@ -35,6 +35,9 @@ var akaatsia = Image.new()
 var blocks
 var hotbar
 
+signal ehitadasaab(block)
+signal lammutadasaab
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
@@ -86,6 +89,7 @@ func _input(event):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	#print(inventory)
 	if select > 19:
 		select = 0
 	if select < 0:
@@ -97,4 +101,37 @@ func _process(delta):
 		texture.create_from_image(hotbarnew)
 		texture.set_flags(2)
 		$hotbar.texture = texture
+		if inventory[s] == -1:
+			amounts[s] = 0
+		if amounts[s] == 0:
+			inventory[s] = -1
+	inventory[20] = -1
+	$Node2D.update()
+	#$hotbar.NOTIFICATION_DRAW
+	#$Node2D._draw()
+	empty = inventory.find(-1)
 	$selslot.position = Vector2(select*36+18,18)
+
+
+func _on_TileMap_ehitus():
+	if amounts[select] > 0:
+		emit_signal("ehitadasaab", inventory[select])
+		#amounts[select] -= 1
+
+
+func _on_TileMap_lammutus(blockbroken):
+	#print(blockbroken)
+	if empty < 20 or inventory.has(blockbroken):
+		if blockbroken == 6:
+			return
+		emit_signal("lammutadasaab")
+		if inventory.has(blockbroken):
+			amounts[inventory.find(blockbroken)] += 1
+		else:
+			inventory[empty] = blockbroken
+			amounts[empty] += 1
+		
+
+
+func _on_TileMap_jahsaabehitada():
+	amounts[select] -= 1
