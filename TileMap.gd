@@ -1,10 +1,6 @@
 extends TileMap
 
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-var persistencenoise = OpenSimplexNoise.new()
+var persistencenoise = OpenSimplexNoise.new()#noises used by worldgen
 var mainnoise = OpenSimplexNoise.new()
 var continentnoise = OpenSimplexNoise.new()
 var tempnoise = OpenSimplexNoise.new()
@@ -12,10 +8,17 @@ var wetnoise = OpenSimplexNoise.new()
 var largetempnoise = OpenSimplexNoise.new()
 var largewetnoise = OpenSimplexNoise.new()
 var rivetrnoise = OpenSimplexNoise.new()
+
 export var chunkW = 15 #when changing these, change the numbers in hullmyts's script, that are used in the changechunk signal
 export var chunkH = 10
+
 var wOffsetx = -1 # activewindow offset, top-left chunk in tiles
 var wOffsety = -1
+
+
+signal lammutus(blockbroken)
+signal ehitus()
+
 var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2,
 				8:0, 9:0, 10:9, 11:1, 12:2, 13:9, 14:1, 15:2}
 #0:sand, 1:sea, 2:grass, 3:box, 4:stone, 5:snow, 6:deep sea
@@ -225,7 +228,7 @@ func _process(delta):
 
 func _notification(what):
 	if what == NOTIFICATION_EXIT_TREE:
-		pass#save_world()
+		save_world()
 
 
 func _on_hullmyts_changechunk(changex, changey):
