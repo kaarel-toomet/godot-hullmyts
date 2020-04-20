@@ -23,11 +23,11 @@ signal ehitus
 signal jahsaabehitada
 var mxy
 
-var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2,
-				8:0, 9:0, 10:9, 11:1, 12:2, 13:9, 14:1, 15:2}
+var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2, 8:0, 9:0,
+ 10:9, 11:1, 12:2, 13:9, 14:1, 15:2, 16:2}
 #0:sand, 1:sea, 2:grass, 3:box, 4:stone, 5:snow, 6:deep sea
 #7:tree, 8:cactus, 9:snowy ground, 10:spruce, 11:peat moss, 12:jungle
-#13:tundra, 14:sea ice, 15:acacia
+#13:tundra, 14:sea ice, 15:acacia, 16:wood
 
 func generate(cx,cy):
 	if $generated.get_cell(cx,cy) != -1:
@@ -112,7 +112,7 @@ func generate(cx,cy):
 				gencell = 1
 			if get_cell(x,y) == -1:
 				set_cell(x,y,gencell)
-			if randi() % 10 == 0:
+			if randi() % 1000 == 0:
 				var spawn = kuld.instance()
 				add_child(spawn)
 				spawn.position = Vector2(x*32,y*32)
@@ -192,25 +192,25 @@ func _ready():
 	
 	tempnoise.seed = 10
 	tempnoise.octaves = 5	
-	tempnoise.period = 150
+	tempnoise.period = 300
 	tempnoise.persistence = 0.5		
 	tempnoise.lacunarity = 2
 		
 	wetnoise.seed = 123
 	wetnoise.octaves = 5
-	wetnoise.period = 150
+	wetnoise.period = 300
 	wetnoise.persistence = 0.5
 	wetnoise.lacunarity = 2
 	
 	largetempnoise.seed = 100
 	largetempnoise.octaves = 5
-	largetempnoise.period = 2500
+	largetempnoise.period = 4000
 	largetempnoise.persistence = 0.5
 	largetempnoise.lacunarity = 2
 	
 	largewetnoise.seed = 1234
 	largewetnoise.octaves = 5
-	largewetnoise.period = 2500
+	largewetnoise.period = 4000
 	largewetnoise.persistence = 0.5
 	largewetnoise.lacunarity = 2
 	

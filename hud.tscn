@@ -64,4 +64,3 @@ script = ExtResource( 4 )
 position = Vector2( 832, 16 )
 scale = Vector2( 2, 2 )
 texture = ExtResource( 5 )
-[connection signal="draw" from="Node2D" to="Node2D" method="_on_Node2D_draw"]

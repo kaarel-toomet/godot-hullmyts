@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=29 format=2]
 
 [ext_resource path="res://assets/pic.png" type="Texture" id=1]
 [ext_resource path="res://hullmyts.gd" type="Script" id=2]
@@ -23,6 +23,10 @@
 [ext_resource path="res://assets/seaice.png" type="Texture" id=21]
 [ext_resource path="res://assets/acacia.png" type="Texture" id=22]
 [ext_resource path="res://kuld.tscn" type="PackedScene" id=23]
+[ext_resource path="res://assets/wood.png" type="Texture" id=24]
+
+[sub_resource type="ConvexPolygonShape2D" id=4]
+points = PoolVector2Array( 1, 1, 15, 1, 15, 15, 1, 15 )
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
 points = PoolVector2Array( 1, 1, 15, 1, 15, 15, 1, 15 )
@@ -52,9 +56,16 @@ points = PoolVector2Array( 1, 1, 15, 1, 15, 15, 1, 15 )
 1/navigation_offset = Vector2( 0, 0 )
 1/shape_offset = Vector2( 0, 0 )
 1/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+1/shape = SubResource( 4 )
 1/shape_one_way = false
-1/shape_one_way_margin = 0.0
-1/shapes = [  ]
+1/shape_one_way_margin = 1.0
+1/shapes = [ {
+"autotile_coord": Vector2( 0, 0 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 4 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+} ]
 1/z_index = 0
 2/name = "muru"
 2/texture = ExtResource( 4 )
@@ -259,6 +270,20 @@ points = PoolVector2Array( 1, 1, 15, 1, 15, 15, 1, 15 )
 15/shape_one_way_margin = 0.0
 15/shapes = [  ]
 15/z_index = 0
+16/name = "puit"
+16/texture = ExtResource( 24 )
+16/tex_offset = Vector2( 0, 0 )
+16/modulate = Color( 1, 1, 1, 1 )
+16/region = Rect2( 0, 0, 16, 16 )
+16/tile_mode = 0
+16/occluder_offset = Vector2( 0, 0 )
+16/navigation_offset = Vector2( 0, 0 )
+16/shape_offset = Vector2( 0, 0 )
+16/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+16/shape_one_way = false
+16/shape_one_way_margin = 0.0
+16/shapes = [  ]
+16/z_index = 0
 
 [sub_resource type="CircleShape2D" id=3]
 radius = 24.0
@@ -281,8 +306,9 @@ scale = Vector2( 0.5, 0.5 )
 format = 1
 
 [node name="hullmyts" type="KinematicBody2D" parent="."]
-position = Vector2( 416, 288 )
+position = Vector2( 100, 100 )
 script = ExtResource( 2 )
+kuld = ExtResource( 23 )
 
 [node name="Sprite" type="Sprite" parent="hullmyts"]
 position = Vector2( 16, 16 )

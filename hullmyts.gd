@@ -6,6 +6,7 @@ extends KinematicBody2D
 var screen_size  # Size of the game window.
 var speed = 4
 var pause = false
+export (PackedScene) var kuld
 
 var chunkW = 15 # change these with the chunk sizes in tilemap.gd
 var chunkH = 10

@@ -4,9 +4,9 @@ extends CanvasLayer
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-export var inventory = [1,2,3,-1,-1,-1,-1,-1,-1,-1,
+export var inventory = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 				-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1]
-export var amounts = [5,0,8,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0]
+export var amounts = [0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0]
 var select = 0
 var empty = 0
 
@@ -32,6 +32,7 @@ var jungle = Image.new()
 var tundra = Image.new()
 var mjxx = Image.new()
 var akaatsia = Image.new()
+var puit = Image.new()
 var blocks
 var hotbar
 
@@ -58,6 +59,7 @@ func _ready():
 	tundra.load("assets/tundra.png")#.expand_x2_hq2x()
 	mjxx.load("assets/seaice.png")#.expand_x2_hq2x()
 	akaatsia.load("assets/acacia.png")#.expand_x2_hq2x()
+	puit.load("assets/wood.png")
 #	liiv.expand_x2_hq2x()
 #	meri.expand_x2_hq2x()
 #	muru.expand_x2_hq2x()
@@ -75,9 +77,19 @@ func _ready():
 	#mjxx.expand_x2_hq2x()
 #	akaatsia.expand_x2_hq2x()
 	blocks = [liiv,meri,muru,kast,kivi,lumi,sygavm,puu,kaktus,
-				lmaa,kuusk,tsammal,jungle,tundra,mjxx,akaatsia, none]
+				lmaa,kuusk,tsammal,jungle,tundra,mjxx,akaatsia,puit, none]
 	hotbar = Image.new()
 	hotbar.load("assets/hotbar.png")
+	
+
+func get(item):
+	if inventory.has(item):
+		amounts[inventory.find(item)] += 1
+	else:
+		inventory[empty] = item
+		amounts[empty] = 1
+
+
 func _input(event):
 	if event is InputEventMouseButton:
 		if event.is_pressed():
@@ -114,6 +126,15 @@ func _process(delta):
 	#$Node2D._draw()
 	empty = inventory.find(-1)
 	$selslot.position = Vector2(select*36+18,18)
+	if Input.is_action_just_pressed("craft"):
+		var block = inventory[select]
+		if block == 7:
+			amounts[select] -= 1
+			get(16)
+		if block == 16:
+			amounts[select] -= 1
+			get(3)
+			
 
 
 func _on_TileMap_ehitus():
