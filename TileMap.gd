@@ -23,11 +23,21 @@ signal ehitus
 signal jahsaabehitada
 var mxy
 
+"""
+block adding checklist
+1.add image to assets folder
+2.add to tileset
+3.add to breakto
+4.add to ID comment
+5.add image and image load to HUD script
+6.add to blocks dict in HUD script
+"""
+
 var breakto = {0:1, 1:6, 2:0, 3:0, 4:2, 5:4, 6:6, 7:2, 8:0, 9:0,
- 10:9, 11:1, 12:2, 13:9, 14:1, 15:2, 16:2}
+ 10:9, 11:1, 12:2, 13:9, 14:1, 15:2, 16:2, 17:2, 18:2}
 #0:sand, 1:sea, 2:grass, 3:box, 4:stone, 5:snow, 6:deep sea
 #7:tree, 8:cactus, 9:snowy ground, 10:spruce, 11:peat moss, 12:jungle
-#13:tundra, 14:sea ice, 15:acacia, 16:wood
+#13:tundra, 14:sea ice, 15:acacia, 16:wood, 17:gold, 18:monster ruins
 
 func generate(cx,cy):
 	if $generated.get_cell(cx,cy) != -1:
@@ -114,8 +124,9 @@ func generate(cx,cy):
 				set_cell(x,y,gencell)
 			if randi() % 1000 == 0:
 				var spawn = kuld.instance()
-				add_child(spawn)
+				get_parent().get_node("kullad").add_child(spawn)
 				spawn.position = Vector2(x*32,y*32)
+				spawn.scale = Vector2(2,2)
 				
 func lammuta(x,y):
 	x = floor(x)
@@ -123,6 +134,11 @@ func lammuta(x,y):
 	if get_cell(x,y) == -1:
 		return
 	set_cell(x,y,breakto[get_cell(x,y)])
+	if randi() % 100 == 0:
+		var spawn = kuld.instance()
+		get_parent().get_node("kullad").add_child(spawn)
+		spawn.position = Vector2(x*32+16,y*32+16)
+		spawn.scale = Vector2(2,2)
 
 
 func save_world():
@@ -138,13 +154,19 @@ func save_world():
 	var data := File.new()
 	data.open("res://world/data.gwrld",File.WRITE)
 	data.store_8(get_parent().get_node("hullmyts").health)
+	data.store_8(get_parent().get_node("hud").kuld)
+	data.store_8(get_parent().get_node("hud").kolliv)
 	for s in range(20):
 		data.store_8(get_parent().get_node("hud").inventory[s])
 		data.store_16(get_parent().get_node("hud").amounts[s])
+	#data.store_double(get_parent().get_node("hullmyts").position[0])
+	#data.store_double(get_parent().get_node("hullmyts").position[1])
 	data.close()
+	
 func load_world():
 	var chunks := File.new()
 	chunks.open("res://world/chunks.gwrld",File.READ)
+	
 	if chunks.file_exists("res://world/chunks.gwrld"):
 		while chunks.get_position() != chunks.get_len():
 			var chunk := Vector2()
@@ -154,12 +176,16 @@ func load_world():
 				for y in range(chunkH):
 					set_cell(x+chunk.x*chunkW,y+chunk.y*chunkH,chunks.get_8())
 		chunks.close()
+		
 	else:
 		print("chunks file not found")
+		
 	var data := File.new()
 	data.open("res://world/data.gwrld",File.READ)
 	if data.file_exists("res://world/data.gwrld"):
 		get_parent().get_node("hullmyts").health = data.get_8()
+		get_parent().get_node("hud").kuld = data.get_8()
+		get_parent().get_node("hud").kolliv = data.get_8()
 		for s in range(20):
 			get_parent().get_node("hud").inventory[s] = data.get_8()
 			get_parent().get_node("hud").amounts[s] = data.get_16()
@@ -224,11 +250,11 @@ func _ready():
 	load_world()##################################################Rtrrrrre
 
 func scroll(sx,sy):
-	for cx in range(3):
-		for cy in range(3):
-			for x in range(chunkW*(cx+wOffsetx),chunkW*(cx+wOffsetx+1)):
-				for y in range(chunkH*(cy+wOffsety),chunkH*(cy+wOffsety+1)):
-					pass#set_cell(x,y,-1)
+	#for cx in range(3):
+		#for cy in range(3):
+			#for x in range(chunkW*(cx+wOffsetx),chunkW*(cx+wOffsetx+1)):
+				#for y in range(chunkH*(cy+wOffsety),chunkH*(cy+wOffsety+1)):
+					#pass#set_cell(x,y,-1)
 					#fix_invalid_tiles()
 	for cx in range(3):
 		for cy in range(3):

@@ -33,8 +33,14 @@ var tundra = Image.new()
 var mjxx = Image.new()
 var akaatsia = Image.new()
 var puit = Image.new()
+var kuldp = Image.new()
+var kollivp = Image.new()
 var blocks
 var hotbar
+
+var kuld = 0
+var kolliv = 0
+
 
 signal ehitadasaab(block)
 signal lammutadasaab
@@ -43,8 +49,8 @@ signal lammutadasaab
 func _ready():
 	pass
 	none.load("assets/none.png")
-	liiv.load("assets/asdfblock.png")#.expand_x2_hq2x()
-	meri.load("assets/sky.png")#.expand_x2_hq2x()
+	liiv.load("assets/asdfblock.png")
+	meri.load("assets/sky.png")
 	muru.load("assets/ground.png")#.expand_x2_hq2x()
 	kast.load("assets/kast.png")#.expand_x2_hq2x()
 	kivi.load("assets/asdfback.png")#.expand_x2_hq2x()
@@ -54,30 +60,20 @@ func _ready():
 	kaktus.load("assets/kaktus.png")#.expand_x2_hq2x()
 	lmaa.load("assets/luminemaa.png")#.expand_x2_hq2x()
 	kuusk.load("assets/kuusk.png")#.expand_x2_hq2x()
-	tsammal.load("assets/turbasammal.png")#.expand_x2_hq2x()
+	tsammal.load("assets/turbasammal.png")
 	jungle.load("assets/jungle.png")#.expand_x2_hq2x()
 	tundra.load("assets/tundra.png")#.expand_x2_hq2x()
 	mjxx.load("assets/seaice.png")#.expand_x2_hq2x()
 	akaatsia.load("assets/acacia.png")#.expand_x2_hq2x()
 	puit.load("assets/wood.png")
-#	liiv.expand_x2_hq2x()
-#	meri.expand_x2_hq2x()
-#	muru.expand_x2_hq2x()
-	#kast.expand_x2_hq2x()
-#	kivi.expand_x2_hq2x()
-#	lumi.expand_x2_hq2x()
-#	sygavm.expand_x2_hq2x()
-	#puu.expand_x2_hq2x()
-	#kaktus.expand_x2_hq2x()
-	#lmaa.expand_x2_hq2x()
-#	kuusk.expand_x2_hq2x()
-#	tsammal.expand_x2_hq2x()
-#	jungle.expand_x2_hq2x()
-#	tundra.expand_x2_hq2x()
-	#mjxx.expand_x2_hq2x()
-#	akaatsia.expand_x2_hq2x()
+	kuldp.load("assets/goldblock.png")
+	kollivp.load("assets/kollivaremed.png")
+	
+	
 	blocks = [liiv,meri,muru,kast,kivi,lumi,sygavm,puu,kaktus,
-				lmaa,kuusk,tsammal,jungle,tundra,mjxx,akaatsia,puit, none]
+				lmaa,kuusk,tsammal,jungle,tundra,mjxx,akaatsia,puit,
+				kuldp, kollivp, none]
+	#print(tsammal)
 	hotbar = Image.new()
 	hotbar.load("assets/hotbar.png")
 	
@@ -101,17 +97,21 @@ func _input(event):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	#print(inventory)
+	
+	$goldtext.text = str(kuld)
+	$kollivtext.text = str(kolliv)
+	
 	if select > 19:
 		select = 0
 	if select < 0:
 		select = 19
 	var hotbarnew = hotbar
-	#print(inventory)
+	
 	for s in range(20):
 		if inventory[s] == 255:
 			inventory[s] = -1
 		hotbarnew.blit_rect(blocks[inventory[s]], Rect2(0,0,32,32),Vector2(1+s*18,1))
+		
 		var texture = ImageTexture.new()
 		texture.create_from_image(hotbarnew)
 		texture.set_flags(2)
@@ -120,35 +120,42 @@ func _process(delta):
 			amounts[s] = 0
 		if amounts[s] == 0:
 			inventory[s] = -1
+			
 	inventory[20] = -1
 	$Node2D.update()
-	#$hotbar.NOTIFICATION_DRAW
-	#$Node2D._draw()
+	
 	empty = inventory.find(-1)
 	$selslot.position = Vector2(select*36+18,18)
+	
 	if Input.is_action_just_pressed("craft"):
 		var block = inventory[select]
-		if block == 7:
+		if block == 7 or block == 10 or block == 12 or block == 15:
 			amounts[select] -= 1
 			get(16)
 		if block == 16:
 			amounts[select] -= 1
 			get(3)
 			
+	if kuld >= 10 and (empty < 20 or inventory.has(17)):
+		kuld -= 10
+		get(17)
+	if kolliv >= 10 and (empty < 20 or inventory.has(18)):
+		kolliv -= 10
+		get(18)
+			
 
 
 func _on_TileMap_ehitus():
 	if amounts[select] > 0:
 		emit_signal("ehitadasaab", inventory[select])
-		#amounts[select] -= 1
 
 
 func _on_TileMap_lammutus(blockbroken):
-	#print(blockbroken)
 	if empty < 20 or inventory.has(blockbroken):
 		if blockbroken == 6:
 			return
 		emit_signal("lammutadasaab")
+		
 		if inventory.has(blockbroken):
 			amounts[inventory.find(blockbroken)] += 1
 		else:

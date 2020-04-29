@@ -83,7 +83,12 @@ func _on_main_pause():
 
 
 func _on_Area2D_area_entered(area):
-	attacked = true
+	#print(area)
+	if area.get_parent().get_parent() == get_parent().get_node("kollid"):
+		attacked = true
+	if area.get_parent().get_parent() == get_parent().get_node("kullad"):
+		area.get_parent().queue_free()
+		get_parent().get_node("hud").kuld += 1
 
 
 func _on_Area2D_area_exited(area):
