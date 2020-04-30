@@ -22,6 +22,7 @@ signal lammutus(blockbroken)
 signal ehitus
 signal jahsaabehitada
 var mxy
+var paused = false
 
 """
 block adding checklist
@@ -263,14 +264,18 @@ func scroll(sx,sy):
 	wOffsety += sy
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _physics_process(delta):
+	if paused:
+		return
 	var parent = get_parent()
 	mxy = parent.get_global_mouse_position()/32
-	if Input.is_action_just_pressed("LCLICK"):
+	var hxy = parent.get_node("hullmyts").position
+	var space_state = get_world_2d().direct_space_state
+	var result = space_state.intersect_ray(hxy+Vector2(16,16), mxy*32-(mxy*32-hxy).normalized()*30, [parent.get_node("hullmyts")])
+	if Input.is_action_just_pressed("LCLICK") and (not result):
 		emit_signal("lammutus",get_cell(floor(mxy[0]),floor(mxy[1])))
-	if Input.is_action_just_pressed("RCLICK"):
+	if Input.is_action_just_pressed("RCLICK") and (not result):
 		emit_signal("ehitus")
-
 func _notification(what):
 	if what == NOTIFICATION_EXIT_TREE:
 		save_world()
@@ -287,3 +292,7 @@ func _on_hud_ehitadasaab(block):
 
 func _on_hud_lammutadasaab():
 	lammuta(mxy[0],mxy[1])
+
+
+func _on_main_pause():
+	paused = !paused
